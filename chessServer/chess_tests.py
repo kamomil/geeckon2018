@@ -104,3 +104,15 @@ with open("/dev/pts/7",'wb') as serial_writer:
     serial_writer.write(position)
     serial_writer.write(POS_END_SIGN)
 
+    #########################################
+
+
+    serial_writer.write(POS_START_SIGN)
+    position = update_chess(position, empty = [21,36], occupy = []) # remove eatn white pown from e5
+    serial_writer.write(position)
+    serial_writer.write(POS_END_SIGN)
+
+    serial_writer.write(POS_START_SIGN)
+    position = update_chess(position, empty=[], occupy=[36])  #move black's knight
+    serial_writer.write(position)
+    serial_writer.write(POS_END_SIGN)
