@@ -40,16 +40,23 @@ def get_move(from_squares, to_squares,board):
     else:
         return None
 
+def belong_to_opponent(board : chess.Board,idx):
+    if board.turn() != board.piece_at(idx):
+        return True
+
 def start_playing():
     logging.basicConfig(level=logging.DEBUG)
     board = chess.Board()
     with serial.Serial(serial_str, baud) as ser:
+        from_squares = []
+        to_squares = []
+        during_castling = False
         while(True):
             x = ser.read()
             if(x == POS_START_SIGN):
                 logging.debug("Serial: got new position")
-                from_squares = []
-                to_squares = []
+
+
                 for idx in range(64):
                     status = ser.read()
                     logging.debug(f"got status {status}, type {type(status)}")
@@ -57,26 +64,38 @@ def start_playing():
                     curr_piece = board.piece_at(idx)
 
                     # A piece in the current index is not there now - update the from_square
-                    if status == EMPTY and curr_piece:
+                    if status == EMPTY and curr_piece and not belong_to_opponent(board,from_squares[0]):
                         from_squares.append(idx)
                     # The square in the current index used to be empty and now it is not - update the to_square
                     elif status == OCCUPIED and not curr_piece:
                         to_squares.append(idx)
+            else:
+                logging.error(f"waited to START_SIGN and got {x}")
+                continue
+
+            if len(from_squares) and len(to_squares):
+                if during_castling:
+                    during_castling = False
+                    continue
+
                 m = get_move(from_squares,to_squares,board)
                 if not m:
                     logging.error("Got invalid move! - read until END_SIGN")
                 else:
+                    if board.is_castling(m):
+                        during_castling = True
                     logging.debug("Got move! pushing it")
+                    from_squares = []
+                    to_squares = []
                     board.push(m)
                     if board.is_checkmate():
                         print("Hurray! Game Ended!!")
                         break
-                x = ser.read()
-                if ser.read() != POS_END_SIGN:
-                    logging.error("didn't got END_POSITION_SIGN after reading 64 bytes")
-                while(ser.read() != POS_END_SIGN):
-                    pass
-            else:
-                logging.error(f"waited to START_SIGN and got {x}")
+            x = ser.read()
+            if ser.read() != POS_END_SIGN:
+                logging.error("didn't got END_POSITION_SIGN after reading 64 bytes")
+            while(ser.read() != POS_END_SIGN):
+                pass
+
 
 start_playing()
