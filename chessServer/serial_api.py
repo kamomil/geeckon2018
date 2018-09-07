@@ -4,6 +4,7 @@ import chess
 
 POS_START_SIGN = b'S'
 POS_END_SIGN = b'E'
+ILEGAL_MOVE = b'X'
 OCCUPIED = b'\x01'
 EMPTY = b'\x00'
 serial_str = '/dev/pts/6'
@@ -115,6 +116,7 @@ def start_playing():
                     if not m:
                         logging.error("Got invalid move! - read until END_SIGN")
                         logging.error(f"from: {from_squares}, to {to_squares}")
+                        ser.write(ILEGAL_MOVE)
                     elif board.is_castling(m) and len(from_squares) == 1 and len(to_squares) == 1:
                         during_castling = m
                         from_squares = []
