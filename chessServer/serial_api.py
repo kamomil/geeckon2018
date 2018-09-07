@@ -44,6 +44,21 @@ def belong_to_opponent(board : chess.Board,idx):
     if board.turn() != board.piece_at(idx):
         return True
 
+#the Arduino runs in an infinite loop, every time a square status changes it updates us
+#so one move is read sent to us according the following:
+
+#1) two board positions in case of normal move - (empty,occupied)
+#2) 3 board positions in case of a move that eat opponents' piece: (empty,empty,occupied)
+#3) 4 board positions in case of casteling: (empty,occupied,empty,occupied)
+
+# we read the board until we have at least one 'from_square' and one 'to_square'
+# once we do, we update the board according to the square.
+# if we have a castling move we assume the move start by moving the king
+# then we turn the 'during_castling' flag to indicate consuming the move of the ROOK
+
+#in case of a move that takes an opponents' piece, we ignore the first empty square we
+# read since this is the eaten piece removed from the board and not the moving piece
+
 def start_playing():
     logging.basicConfig(level=logging.DEBUG)
     board = chess.Board()
