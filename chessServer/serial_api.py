@@ -93,6 +93,9 @@ def start_playing():
                     elif status == OCCUPIED and curr_piece and idx == eaten_idx:
                         to_squares.append(idx)
                         eaten_idx = None
+                    from_squares = list(set(from_squares))
+                    to_squares = list(set(to_squares))
+
                     logging.debug(f"{idx}: from: {from_squares}, to {to_squares}")
             else:
                 logging.error(f"waited to START_SIGN and got {x}")
