@@ -29,6 +29,18 @@ def step(from_idx,to_idx,statuses):
             a += byts
     return a
 
+def update_chess(position, empty : list, occupy : list):
+    a = b''
+    for i, stat in enumerate(position):
+        if i in empty:
+            a += EMPTY
+        elif i in occupy:
+            a += OCCUPIED
+        else:
+            byts = stat.to_bytes(1, byteorder='little')
+            a += byts
+    return a
+
 initial_board = OCCUPIED * 16 + EMPTY * (8 * 4) + OCCUPIED * 16
 
 with open("/dev/pts/7",'wb') as serial_writer:
@@ -69,3 +81,26 @@ with open("/dev/pts/7",'wb') as serial_writer:
     position = step(4, 6, position)  # casteling
     serial_writer.write(position)
     serial_writer.write(POS_END_SIGN)
+
+    serial_writer.write(POS_START_SIGN)
+    position = step(7, 5, position)  # done with casteling
+    serial_writer.write(position)
+    serial_writer.write(POS_END_SIGN)
+
+    ######################################3
+
+    serial_writer.write(POS_START_SIGN)
+    position = update_chess(position, empty = [28], occupy = []) # remove eatn white pown from e5
+    serial_writer.write(position)
+    serial_writer.write(POS_END_SIGN)
+
+    serial_writer.write(POS_START_SIGN)
+    position = update_chess(position, empty=[45], occupy=[])  #move black's knight
+    serial_writer.write(position)
+    serial_writer.write(POS_END_SIGN)
+
+    serial_writer.write(POS_START_SIGN)
+    position = update_chess(position, empty=[], occupy=[28])  # replace the black knight in e5
+    serial_writer.write(position)
+    serial_writer.write(POS_END_SIGN)
+
