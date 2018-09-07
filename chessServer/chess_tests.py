@@ -21,11 +21,12 @@ def step(from_idx,to_idx,statuses):
     a = b''
     for i,stat in enumerate(statuses):
         if i == from_idx:
-          a += EMPTY
+            a += EMPTY
         elif i == to_idx:
             a += OCCUPIED
         else:
-            a += stat.to_bytes(1,byteorder='little')
+            byts = stat.to_bytes(1,byteorder='little')
+            a += byts
     return a
 
 initial_board = OCCUPIED * 16 + EMPTY * (8 * 4) + OCCUPIED * 16
@@ -65,6 +66,6 @@ with open("/dev/pts/7",'wb') as serial_writer:
     serial_writer.write(POS_END_SIGN)
 
     serial_writer.write(POS_START_SIGN)
-    position = step(4, 6, position)  # e2->e4
+    position = step(4, 6, position)  # casteling
     serial_writer.write(position)
     serial_writer.write(POS_END_SIGN)

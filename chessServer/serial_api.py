@@ -40,8 +40,8 @@ def get_move(from_squares, to_squares,board):
     else:
         return None
 
-def belong_to_opponent(board : chess.Board,idx):
-    if board.turn() != board.piece_at(idx):
+def belong_to_opponent(board : chess.Board,piece):
+    if board.turn != piece.color:
         return True
 
 #the Arduino runs in an infinite loop, every time a square status changes it updates us
@@ -62,6 +62,7 @@ def belong_to_opponent(board : chess.Board,idx):
 def start_playing():
     logging.basicConfig(level=logging.DEBUG)
     board = chess.Board()
+    print(board)
     with serial.Serial(serial_str, baud) as ser:
         from_squares = []
         to_squares = []
@@ -74,12 +75,12 @@ def start_playing():
 
                 for idx in range(64):
                     status = ser.read()
-                    logging.debug(f"got status {status}, type {type(status)}")
+                    logging.debug(f"{idx}: got status {status}")
                     # push(move)
                     curr_piece = board.piece_at(idx)
 
                     # A piece in the current index is not there now - update the from_square
-                    if status == EMPTY and curr_piece and not belong_to_opponent(board,from_squares[0]):
+                    if status == EMPTY and curr_piece and not belong_to_opponent(board,curr_piece):
                         from_squares.append(idx)
                     # The square in the current index used to be empty and now it is not - update the to_square
                     elif status == OCCUPIED and not curr_piece:
@@ -103,14 +104,15 @@ def start_playing():
                     from_squares = []
                     to_squares = []
                     board.push(m)
+                    print(board)
                     if board.is_checkmate():
                         print("Hurray! Game Ended!!")
                         break
             x = ser.read()
-            if ser.read() != POS_END_SIGN:
-                logging.error("didn't got END_POSITION_SIGN after reading 64 bytes")
-            while(ser.read() != POS_END_SIGN):
-                pass
+            if x != POS_END_SIGN:
+                logging.error(f"didn't got END_POSITION_SIGN after reading 64 bytes: {x}")
+            while(x != POS_END_SIGN):
+                x = ser.read()
 
 
 start_playing()
