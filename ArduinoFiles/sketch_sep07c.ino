@@ -22,10 +22,73 @@ byte controlPins[] = {B00000000,
 // holds incoming values from 74HC4067                  
 int muxValues[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
+int chess_to_mux[64];
+int chess_to_pin[64];
+
 void setup()
 {
   Serial.begin(9600);
   DDRD = B11111111; // set PORTD (digital 7~0) to outputs
+
+  //////////mux 0////////////////
+
+for(int i=0;i<16;i++){
+chess_to_mux[i] = 0;
+}
+int k = 0;
+for(int i=7;i>=0;i--){
+  chess_to_pin[k] = i;
+  k++;
+}
+for(int i=15;i>=8;i--){
+  chess_to_pin[k] = i;
+  k++;
+}
+
+//////////mux 1////////////////
+
+for(int i=16;i<32;i++){
+chess_to_mux[i] = 1;
+}
+k = 16;
+for(int i=7;i>=0;i--){
+  chess_to_pin[k] = i;
+  k++;
+}
+for(int i=15;i>=8;i--){
+  chess_to_pin[k] = i;
+  k++;
+}
+
+//////////mux 2////////////////
+
+for(int i=32;i<48;i++){
+chess_to_mux[i] = 2;
+}
+k = 32;
+for(int i=7;i>=0;i--){
+  chess_to_pin[k] = i;
+  k++;
+}
+for(int i=15;i>=8;i--){
+  chess_to_pin[k] = i;
+  k++;
+}
+
+//////////mux 3////////////////
+
+for(int i=48;i<64;i++){
+chess_to_mux[i] = 3;
+}
+k = 48;
+for(int i=7;i>=0;i--){
+  chess_to_pin[k] = i;
+  k++;
+}
+for(int i=15;i>=8;i--){
+  chess_to_pin[k] = i;
+  k++;
+}
 }
 
 void setPin(int outputPin)
@@ -37,30 +100,68 @@ void setPin(int outputPin)
 char EMPTY = 0;
 char OCCUPIED = 1;
 
+
+void displayDataBoard()
+{
+  for (int i = 0; i < 16; i++)
+  {
+    Serial.print(muxValues[i]);
+    Serial.print(" , "); 
+    if (i==7)
+    {
+      Serial.println();
+      }
+  }
+  Serial.println();
+}
+
+
 void loop()
 {
-    Serial.write('S');
-    for (int i = 0; i < 4; i++){
-      for (int j = 0; j < 4; j++)
-      { 
-        setPin(j); // choose an input pin on the 74HC4067
-        muxValues[i,j]=analogRead(i); // read the vlaue on that pin and store in array
+//    Serial.write('S');
+//    for (int i = 0; i < 4; i++){
+//      for (int j = 15; j >= 0; j--)
+//      { 
+//        setPin(j); // choose an input pin on the 74HC4067
+//        muxValues[j]=analogRead(i); // read the vlaue on that pin and store in array
+//       
+//        if (muxValues[j] >= 400)
+//        {
+//          Serial.write(EMPTY);
+//        }
+//        else
+//        {
+//          Serial.write(OCCUPIED);
+//          }
+//      }
+//    }
+//     Serial.write('E');
+
+
+
+Serial.write('S');
+    for (int i = 0; i < 64; i++){
+      int mux = chess_to_mux[i];
+      int pin = chess_to_pin[i];
+      
+        setPin(pin); // choose an input pin on the 74HC4067
+        int val = analogRead(mux); // read the vlaue on that pin and store in array
        
-        if (muxValues[i] >= 400)
+        if (val >= 200)
         {
           Serial.write(EMPTY);
         }
-        else if (muxValues[i] < 400)
+        else
         {
           Serial.write(OCCUPIED);
           }
       }
-    }
+    
      Serial.write('E');
-
-  /*// display captured data
-  displayData();*/
-  delay(1000); 
+     
+  // display captured data
+  /*displayDataBoard();*/
+  delay(5000); 
   /*
   // serial read section
   while (Serial.available()) // this will be skipped if no data present, leading to
