@@ -117,6 +117,9 @@ def start_playing():
                         logging.error("Got invalid move! - read until END_SIGN")
                         logging.error(f"from: {from_squares}, to {to_squares}")
                         ser.write(ILEGAL_MOVE)
+                        during_castling = None
+                        from_squares = []
+                        to_squares = []
                     elif board.is_castling(m) and len(from_squares) == 1 and len(to_squares) == 1:
                         during_castling = m
                         from_squares = []

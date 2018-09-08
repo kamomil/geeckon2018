@@ -53,6 +53,11 @@ with open("/dev/pts/7",'wb') as serial_writer:
     serial_writer.write(POS_END_SIGN)
 
     serial_writer.write(POS_START_SIGN)
+    position = step(13, 28, position)  # e2->e4
+    serial_writer.write(position)
+    serial_writer.write(POS_END_SIGN)
+
+    serial_writer.write(POS_START_SIGN)
     position = step(52, 36, position)  # e7->e5
     serial_writer.write(position)
     serial_writer.write(POS_END_SIGN)
