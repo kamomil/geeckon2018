@@ -34,37 +34,49 @@ void setPin(int outputPin)
   PORTD = controlPins[outputPin];
 }
 
-void displayData()
-// dumps captured data from array to serial monitor
+void displayDataBoard()
 {
-  for (int j = 0; j < 4; j++)
+  for (int i = 0; i < 16; i++)
   {
-    Serial.println();
-    Serial.println("Values from multiplexer:");
-    Serial.println("========================");
-    for (int i = 0; i < 16; i++)
+    Serial.print(muxValues[i]);
+    Serial.print(" , "); 
+    if (i==7)
     {
-      Serial.print("input i"); 
-      Serial.print(i); 
-      Serial.print(" = ");
-      Serial.println(muxValues[i]);
-    }
-    Serial.println("========================");  
+      Serial.println();
+      }
   }
+  Serial.println();
 }
 
+void displayData(int i)
+{
+  Serial.println();
+  Serial.print("Values from multiplexer:");
+  Serial.print(i);
+  Serial.println("========================");
+  for (int i = 0; i < 16; i++)
+  {
+    Serial.print("input I"); 
+    Serial.print(i); 
+    Serial.print(" = "); 
+    Serial.println(muxValues[i]);
+  }
+  Serial.println("========================");  
+}
+  
 void loop()
 {
-    for (int i = 0; i < 16; i++)
-    {
-      setPin(i); // choose an input pin on the 74HC4067
-      for (int j = 0; j < 4; j++)
+    for (int i = 0; i < 4; i++){
+      for (int j=0; j< 16; j++)
       {
-        muxValues[i]=analogRead(j); // read the vlaue on that pin and store in array
+        setPin(j); // choose an input pin on the 74HC4067
+        muxValues[i,j]=analogRead(i); // read the vlaue on that pin and store in array
       }
+      displayDataBoard();
     }
+    Serial.println("========================");
 
   // display captured data
-  displayData();
-  delay(1000); 
+  //displayData();
+  delay(10000); 
 }
