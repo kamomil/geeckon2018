@@ -77,7 +77,7 @@ def start_playing():
 
                 for idx in range(64):
                     status = ser.read()
-                    logging.debug(f"{idx}: got status {status}")
+                    #logging.debug(f"{idx}: got status {status}")
                     # push(move)
                     curr_piece = board.piece_at(idx)
 
@@ -97,11 +97,11 @@ def start_playing():
                     from_squares = list(set(from_squares))
                     to_squares = list(set(to_squares))
 
-                    logging.debug(f"{idx}: from: {from_squares}, to {to_squares}")
+                    #logging.debug(f"{idx}: from: {from_squares}, to {to_squares}")
             else:
                 logging.error(f"waited to START_SIGN and got {x}")
                 continue
-            logging.debug(f"from: {from_squares}, to {to_squares}")
+            #logging.debug(f"from: {from_squares}, to {to_squares}")
             if len(from_squares) and len(to_squares):
                 if during_castling:
                     logging.debug("Done with casteling")
@@ -120,6 +120,7 @@ def start_playing():
                         during_castling = None
                         from_squares = []
                         to_squares = []
+                        eaten_idx = None
                     elif board.is_castling(m) and len(from_squares) == 1 and len(to_squares) == 1:
                         during_castling = m
                         from_squares = []

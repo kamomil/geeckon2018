@@ -53,7 +53,12 @@ with open("/dev/pts/7",'wb') as serial_writer:
     serial_writer.write(POS_END_SIGN)
 
     serial_writer.write(POS_START_SIGN)
-    position = step(13, 28, position)  # e2->e4
+    bad_position = update_chess(position, empty=[13],occupy=[])  # e2->e4
+    serial_writer.write(position)
+    serial_writer.write(POS_END_SIGN)
+
+    serial_writer.write(POS_START_SIGN)
+    bad_position = update_chess(bad_position, empty=[53], occupy=[13])  # e2->e4
     serial_writer.write(position)
     serial_writer.write(POS_END_SIGN)
 
